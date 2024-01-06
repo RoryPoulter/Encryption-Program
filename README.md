@@ -9,8 +9,15 @@ The program has 5 functions:
 - Decrypting .txt files
 
 The cipher is difficult to crack without knowing how it works, as it has over 403 SEPTILLION possible keys.
+## Installation
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the required packages.
+```bash
+pip install -r /path/to/requiremnets.txt
+```
 
-## How To Use
+## Usage
+
+
 ### Encrypting Text
 - Enter plain text
 - Enter key, or select random key
@@ -41,3 +48,12 @@ The cipher is difficult to crack without knowing how it works, as it has over 40
 - Drag and drop the file into the box on the window
 - Press "Decrypt File" below the file name
 - The decrypted file will contain decrypted text
+
+## Development
+Written in Python 3.10.\
+Python version is fully functional.\
+Future updates will include:
+<ul>
+  <li>Ability to generate key from letter mapping</li>
+  <li>Browser version</li>
+</ul>
