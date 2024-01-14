@@ -46,20 +46,16 @@ def drop(event):
     Finds the file name
     """
     if encrypt_file_frame.winfo_ismapped():
-        err_lab = en_err_lab
         file_name_label = encrypt_file_name_label
         entry_sv = en_entry_sv
         confirm_button = encrypt_file_confirm_button
     else:
-        err_lab = de_err_lab
         file_name_label = decrypt_file_name_label
         entry_sv = de_entry_sv
         confirm_button = decrypt_file_confirm_button
 
-    err_lab.config(text="")
-
     if ".txt" not in event.data:
-        err_lab.config(text="Invalid file type: enter .txt file")
+        messagebox.showerror("Error", "Invalid file type: enter .txt file")
     else:
         confirm_button.config(state="normal")
         path = event.data.strip("{").strip("}")
@@ -97,7 +93,6 @@ def decryptFile():
     """
     Decrypts the text and name of the .txt file as a separate file
     """
-    de_err_lab.config(text="")
     path = decrypt_file_entry.get()
     file_name = path.split("/")[-1][:-4]
     with open(path, "r") as encrypted_file:
@@ -108,7 +103,7 @@ def decryptFile():
     try:
         encoded_letters = generateEncryptedLetters(base10ToBase26(key))
     except ValueError:
-        de_err_lab.config(text="Invalid key: 1st line must be a valid key ONLY")
+        messagebox.showerror("Error", "Invalid key: 1st line must be a valid key ONLY")
     else:
         decrypted_file_name = decrypt(file_name, encoded_letters)
 
@@ -182,13 +177,16 @@ def encryptText():
     text = (encrypt_text_entry.get()).upper()
     encrypt_output.config(text="")
     encrypt_key_output.config(text="")
-    en_error_lab.config(text="")
     if toggle_random_key_button.config("text")[-1] == "Custom Key":
         key = generateKey()
         encrypt_key_output.config(text="Key: " + str(key))
     else:
         key = encrypt_key_entry.get()
         if key == "":
+            messagebox.showerror("Error", "Key field empty")
+            return
+        elif not key.isnumeric():
+            messagebox.showerror("Error", "Invalid input: key must be a number")
             return
 
     key = base10ToBase26(key)
@@ -200,7 +198,7 @@ def encryptText():
         encrypt_output.config(text=encrypted_text)
 
     else:
-        en_error_lab.config(text="Error: Invalid key")
+        messagebox.showerror("Error", "Invalid key")
 
 
 def encrypt(decrypted_text, letter_mapping):
@@ -231,6 +229,9 @@ def decryptText():
     key = decrypt_key_entry.get()
     if key == "":
         messagebox.showerror("Error", "Key field empty")
+        return
+    elif not key.isnumeric():
+        messagebox.showerror("Error", "Invalid input: key must be a number")
         return
     key = base10ToBase26(key)
 
@@ -380,7 +381,6 @@ def setupFrameEncryptText():
     Label(encrypt_text_frame, text="Cipher Text:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     encrypt_output.pack(pady=5)
     encrypt_key_output.pack(pady=5)
-    en_error_lab.pack(pady=5)
     CustomButton(encrypt_text_frame, **styles["button"], text="Copy Cipher Text", command=copyCipherText,
                  width=18).pack(padx=35, side=RIGHT)
     CustomButton(encrypt_text_frame, **styles["button"], text="Copy Key", command=copyKey, width=18).pack(padx=35, side=LEFT)
@@ -406,7 +406,6 @@ def setupFrameEncryptFile():
     Label(encrypt_file_frame, text="Drop file:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
     encrypt_file_entry.place(height=250, width=250, x=200, y=115)
     encrypt_file_name_label.place(x=325, y=400, anchor=CENTER)
-    en_err_lab.place(x=325, y=430, anchor=CENTER)
     encrypt_file_confirm_button.place(x=325, y=465, anchor=CENTER)
 
 
@@ -418,7 +417,6 @@ def setupFrameDecryptFile():
     Label(decrypt_file_frame, text="Drop file:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
     decrypt_file_entry.place(height=250, width=250, x=200, y=115)
     decrypt_file_name_label.place(x=325, y=400, anchor=CENTER)
-    de_err_lab.place(x=325, y=430, anchor=CENTER)
     decrypt_file_confirm_button.place(x=325, y=465, anchor=CENTER)
 
 
@@ -566,7 +564,6 @@ toggle_random_key_button = CustomButton(encrypt_text_frame, **styles["button"], 
 encrypt_key_entry = Entry(encrypt_text_frame, **styles["entry"], width=38)
 encrypt_output = Label(encrypt_text_frame, bg=bg, fg=emphasis, font=(font, 16, "bold"))
 encrypt_key_output = Label(encrypt_text_frame, bg=bg, fg=text_col, font=(font, 16))
-en_error_lab = Label(encrypt_text_frame, font=(font, 12, "bold"), bg=bg, fg=emphasis)
 
 # Key Widgets
 key_check_entry = Entry(key_frame, **styles["entry"], width=38)
@@ -581,8 +578,6 @@ encrypt_file_entry = Entry(encrypt_file_frame, text=en_entry_sv, width=25, font=
 
 encrypt_file_name_label = Label(encrypt_file_frame, bg="#222222", fg="#FFFFFF", font=(font, 14))
 
-en_err_lab = Label(encrypt_file_frame, bg="#222222", fg="#AA0000", font=(font, 14, "bold"))
-
 encrypt_file_confirm_button = CustomButton(encrypt_file_frame, **styles["button"], text="Encrypt File", width=15, command=encryptFile,
                                            state="disabled", disabledforeground=text_col)
 
@@ -595,8 +590,6 @@ decrypt_file_entry = Entry(decrypt_file_frame, text=de_entry_sv, width=25, font=
                            disabledforeground="#161616", state="disabled")
 
 decrypt_file_name_label = Label(decrypt_file_frame, bg="#222222", fg="#FFFFFF", font=(font, 14))
-
-de_err_lab = Label(decrypt_file_frame, bg="#222222", fg="#AA0000", font=(font, 14, "bold"))
 
 decrypt_file_confirm_button = CustomButton(decrypt_file_frame, **styles["button"], text="Decrypt File", width=15, command=decryptFile,
                                            disabledforeground=text_col, state="disabled")
