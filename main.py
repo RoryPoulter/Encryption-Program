@@ -228,9 +228,9 @@ def decryptText():
     """
     text = (decrypt_text_entry.get()).upper()
     decrypt_output.config(text="")
-    de_error_lab.config(text="")
     key = decrypt_key_entry.get()
     if key == "":
+        messagebox.showerror("Error", "Key field empty")
         return
     key = base10ToBase26(key)
 
@@ -240,7 +240,7 @@ def decryptText():
         decrypted_text = decrypt(text, encrypted_letters)
         decrypt_output.config(text=decrypted_text)
     else:
-        de_error_lab.config(text="Error: Invalid key")
+        messagebox.showerror("Error", "Invalid key")
 
 
 def decrypt(encrypted_text, letter_mapping):
@@ -362,7 +362,7 @@ def setupFrameDecryptText():
     CustomButton(decrypt_text_frame, **styles["button"], text="Decrypt", command=decryptText, width=18).pack(pady=5)
     Label(decrypt_text_frame, text="Plain Text:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     decrypt_output.pack(pady=5)
-    de_error_lab.pack(pady=5)
+
     CustomButton(decrypt_text_frame, **styles["button"], text="Copy Plain Text", command=copyPlainText, width=18).pack(pady=5)
 
 
@@ -559,7 +559,6 @@ decrypt_file_frame = Frame(window, bg=bg)
 decrypt_text_entry = Entry(decrypt_text_frame, **styles["entry"])
 decrypt_key_entry = Entry(decrypt_text_frame, **styles["entry"], width=38)
 decrypt_output = Label(decrypt_text_frame, bg=bg, fg=emphasis, font=(font, 16, "bold"))
-de_error_lab = Label(decrypt_text_frame, font=(font, 12, "bold"), bg=bg, fg=emphasis)
 
 # Encrypt Widgets
 encrypt_text_entry = Entry(encrypt_text_frame, **styles["entry"])
