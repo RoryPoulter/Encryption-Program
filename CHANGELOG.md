@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-## v1.1.1 [2024-01-13]
+## v1.1.1 [2024-01-14]
 ### New Features
 - Error pop-ups for invalid key inputs
 
