@@ -306,6 +306,10 @@ def checkKey():
     mapped_letters_label.config(text=letters)
     key = key_check_entry.get()
     if key == "":
+        messagebox.showerror("Error", "Key field empty")
+        return
+    elif not key.isnumeric():
+        messagebox.showerror("Error", "Invalid input: key must be a number")
         return
     key = base10ToBase26(key)
 
