@@ -3,6 +3,7 @@
 # Last edited: 25/06/23
 
 from tkinter import *
+from tkinter import messagebox
 from tkinterdnd2 import *
 from random import choice
 import pyperclip
@@ -301,7 +302,6 @@ def checkKey():
     """
     Checks if the key is valid and updates display
     """
-    shifts_label.config(text="Shifts: Invalid", fg=invalid)
     mapped_letters_label.config(text=letters)
     key = key_check_entry.get()
     if key == "":
@@ -311,10 +311,10 @@ def checkKey():
     shift_check = testKey(key)
 
     if shift_check:
-        shifts_label.config(text="Shifts: Valid", fg=valid)
-
         encoded_letters = generateEncryptedLetters(key)
         mapped_letters_label.config(text=encoded_letters)
+    else:
+        messagebox.showerror("Error", "Invalid key")
 
 
 def testKey(base26_key):
@@ -394,7 +394,6 @@ def setupFrameKeyCheck():
     Label(key_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     key_check_entry.pack(pady=5)
     key_check_but.pack(pady=5)
-    shifts_label.pack(pady=5)
     letters_label.pack(pady=5)
     mapped_letters_label.pack(pady=5)
 
@@ -573,7 +572,6 @@ en_error_lab = Label(encrypt_text_frame, font=(font, 12, "bold"), bg=bg, fg=emph
 # Key Widgets
 key_check_entry = Entry(key_frame, **styles["entry"], width=38)
 key_check_but = CustomButton(key_frame, **styles["button"], text="Check Key", command=checkKey, width=18)
-shifts_label = Label(key_frame, text="Shifts: Invalid", bg=bg, fg=invalid, font=(font, 12))
 letters_label = Label(key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
 mapped_letters_label = Label(key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
 
@@ -618,6 +616,6 @@ menu_frame.place(x=0, y=0, width=150, height=700)
 for wid in menu_widgets:
     wid.pack(anchor="e", padx=5, pady=20)
 
-Label(text="R. Poulter v1.1", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=677)
+Label(text="R. Poulter v1.1.1", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=677)
 
 window.mainloop()
