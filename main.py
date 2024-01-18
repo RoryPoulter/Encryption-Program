@@ -394,8 +394,8 @@ def setupFrameKeyCheck():
     """
     Sets up the frame for checking keys
     """
-    Label(key_frame, text="Check Key Validity", bg=bg, fg=emphasis, font=(font, 18, "bold")).pack(pady=10)
-    Label(key_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
+    Label(random_key_frame, text="Check Key Validity", bg=bg, fg=emphasis, font=(font, 18, "bold")).pack(pady=10)
+    Label(random_key_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     key_check_entry.pack(pady=5)
     key_check_but.pack(pady=5)
     letters_label.pack(pady=5)
@@ -424,11 +424,23 @@ def setupFrameDecryptFile():
     decrypt_file_confirm_button.place(x=325, y=465, anchor=CENTER)
 
 
+def setupFrameGenerateKey():
+    """
+    Sets up the frame for generating keys from mappings
+    """
+    Label(known_key_frame, text="Generate Key", bg="#222222", fg="#AA0000", font=(font, 18, "bold")).pack(pady=15)
+    Label(known_key_frame, text="Mapping:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
+    generate_key_entry.place(x=325, y=115, anchor=CENTER)
+    generate_key_button.place(x=325, y=150, anchor=CENTER)
+    key_label.place(x=325, y=200, anchor=CENTER)
+
+
 def loadFrameDecryptText():
     """
     Loads the frame for decrypting text
     """
-    key_frame.place_forget()
+    random_key_frame.place_forget()
+    known_key_frame.place_forget()
     encrypt_text_frame.place_forget()
     encrypt_file_frame.place_forget()
     decrypt_file_frame.place_forget()
@@ -439,7 +451,8 @@ def loadFrameEncryptText():
     """
     Loads the frame for encrypting text
     """
-    key_frame.place_forget()
+    random_key_frame.place_forget()
+    known_key_frame.place_forget()
     decrypt_text_frame.place_forget()
     encrypt_file_frame.place_forget()
     decrypt_file_frame.place_forget()
@@ -452,9 +465,10 @@ def loadFrameKeyCheck():
     """
     decrypt_text_frame.place_forget()
     encrypt_text_frame.place_forget()
+    known_key_frame.place_forget()
     encrypt_file_frame.place_forget()
     decrypt_file_frame.place_forget()
-    key_frame.place(x=350, y=50, width=650, height=600)
+    random_key_frame.place(x=350, y=50, width=650, height=600)
 
 
 def loadFrameEncryptFile():
@@ -463,7 +477,8 @@ def loadFrameEncryptFile():
     """
     decrypt_text_frame.place_forget()
     encrypt_text_frame.place_forget()
-    key_frame.place_forget()
+    random_key_frame.place_forget()
+    known_key_frame.place_forget()
     decrypt_file_frame.place_forget()
     encrypt_file_frame.place(x=350, y=50, width=650, height=600)
 
@@ -474,9 +489,42 @@ def loadFrameDecryptFile():
     """
     decrypt_text_frame.place_forget()
     encrypt_text_frame.place_forget()
-    key_frame.place_forget()
+    random_key_frame.place_forget()
+    known_key_frame.place_forget()
     encrypt_file_frame.place_forget()
     decrypt_file_frame.place(x=350, y=50, width=650, height=600)
+
+
+def loadFrameGenerateKey():
+    """
+    Loads the frame for generating keys from mapping
+    """
+    decrypt_text_frame.place_forget()
+    encrypt_text_frame.place_forget()
+    random_key_frame.place_forget()
+    decrypt_file_frame.place_forget()
+    encrypt_file_frame.place_forget()
+    known_key_frame.place(x=350, y=50, width=650, height=600)
+
+
+def generateKnownKey():
+    mapped_letters = generate_key_entry.get().split(",")
+    if not validateMapping(mapped_letters):
+        messagebox.showerror("Error", "Invalid mapping")
+        return
+    base26 = ""
+    for i in range(26):
+        shift = (letters.index(mapped_letters[i]) - i + 26) % 26
+        digit = shifts[shift]
+        base26 += digit
+    base10 = base26ToBase10(base26)
+    key_label.config(text=base10)
+
+
+def validateMapping(mapped_letters):
+    letter_set = set(letters)
+    mapping_set = set(mapped_letters)
+    return letter_set == mapping_set
 
 
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -545,15 +593,18 @@ Label(menu_frame, image=image, bg=bg2, borderwidth=0).pack(pady=5)
 
 menu_decrypt_text_button = CustomButton(menu_frame, **styles["side button"], text="Decrypt text", command=loadFrameDecryptText)
 menu_encrypt_text_button = CustomButton(menu_frame, **styles["side button"], text="Encrypt text", command=loadFrameEncryptText)
-menu_key_button = CustomButton(menu_frame, **styles["side button"], text="Check key", command=loadFrameKeyCheck)
+menu_random_key_button = CustomButton(menu_frame, **styles["side button"], text="Check key", command=loadFrameKeyCheck)
+menu_known_key_button = CustomButton(menu_frame, **styles["side button"], text="Generate key", command=loadFrameGenerateKey)
 menu_encrypt_file_button = CustomButton(menu_frame, **styles["side button"], text="Encrypt file", command=loadFrameEncryptFile)
 menu_decrypt_file_button = CustomButton(menu_frame, **styles["side button"], text="Decrypt file", command=loadFrameDecryptFile)
 
-menu_widgets = (menu_decrypt_text_button, menu_encrypt_text_button, menu_key_button, menu_encrypt_file_button, menu_decrypt_file_button)
+menu_widgets = (menu_decrypt_text_button, menu_encrypt_text_button, menu_random_key_button,
+                menu_known_key_button, menu_encrypt_file_button, menu_decrypt_file_button)
 
 decrypt_text_frame = Frame(window, bg=bg)
 encrypt_text_frame = Frame(window, bg=bg)
-key_frame = Frame(window, bg=bg)
+random_key_frame = Frame(window, bg=bg)
+known_key_frame = Frame(window, bg=bg)
 encrypt_file_frame = Frame(window, bg=bg)
 decrypt_file_frame = Frame(window, bg=bg)
 
@@ -569,11 +620,16 @@ encrypt_key_entry = Entry(encrypt_text_frame, **styles["entry"], width=38)
 encrypt_output = Label(encrypt_text_frame, bg=bg, fg=emphasis, font=(font, 16, "bold"))
 encrypt_key_output = Label(encrypt_text_frame, bg=bg, fg=text_col, font=(font, 16))
 
-# Key Widgets
-key_check_entry = Entry(key_frame, **styles["entry"], width=38)
-key_check_but = CustomButton(key_frame, **styles["button"], text="Check Key", command=checkKey, width=18)
-letters_label = Label(key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
-mapped_letters_label = Label(key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
+# Random Key Widgets
+key_check_entry = Entry(random_key_frame, **styles["entry"], width=38)
+key_check_but = CustomButton(random_key_frame, **styles["button"], text="Check Key", command=checkKey, width=18)
+letters_label = Label(random_key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
+mapped_letters_label = Label(random_key_frame, text=letters, bg=bg, fg=text_col, font=("Consolas", 14))
+
+# Known Key Widgets
+generate_key_entry = Entry(known_key_frame, **styles["entry"], width=45)
+generate_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateKnownKey, width=18)
+key_label = Label(known_key_frame, bg=bg, fg=text_col, font=(font, 16))
 
 # Encrypt File Widgets
 en_entry_sv = StringVar()
@@ -606,6 +662,7 @@ setupFrameEncryptText()
 setupFrameKeyCheck()
 setupFrameEncryptFile()
 setupFrameDecryptFile()
+setupFrameGenerateKey()
 
 menu_frame.place(x=0, y=0, width=150, height=700)
 
