@@ -1,10 +1,11 @@
 # Encryption-Program
 Python program used to encrypt and decrypt text and .txt files using a custom cipher.
 
-The program has 5 functions:
+The program has 6 functions:
 - Encrypting text
 - Decrypting text
 - Validating keys
+- Generating keys
 - Encrypting .txt files
 - Decrypting .txt files
 
@@ -24,7 +25,7 @@ pip install -r /path/to/requiremnets.txt
 - Press "Encrypt"
 - Copy cipher text or key to clipboard
 
-### Decrpting Text
+### Decrypting Text
 - Enter cipher text
 - Enter key
 - Press "Decrypt"
@@ -34,6 +35,11 @@ pip install -r /path/to/requiremnets.txt
 - Enter key
 - Press "Check Key"
 - If the key is valid, the letter mapping will be shown
+
+### Generating Keys
+- Enter the mapping in the format *H,E,M,Q,K,Y,U,J,W,O,V,P,T,X,Z,D,F,C,S,B,N,I,G,R,L,A* where A maps to H, B maps to E, etc.
+- Press "Generate Key"
+- If the mapping is valid, the corresponding key will be generated
 
 ### Encrypting Files
 - Open the "Encrypt file" tab on the window
