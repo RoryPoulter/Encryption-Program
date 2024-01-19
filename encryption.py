@@ -3,13 +3,29 @@ from random import choice
 
 class Key:
     def __init__(self, base10):
-        self.base10 = base10
-        self.base26 = base10ToBase26(base10)
+        """
+        Creates a key object
+        :param base10: The base-10 representation of the key
+        :type base10: int | str
+        """
+        self.base10 = int(base10)
+        self.base26 = base10ToBase26(self.base10)
         self.forward_mapping = self.generateMapping()  # Decrypted -> Encrypted
         self.backward_mapping = invertDictionary(self.forward_mapping)  # Encrypted -> Decrypted
 
+        valid = testKey(self)
+        if not valid:
+            raise ValueError("Invalid key: base-10 value does not produce unique mapping")
+
     def __repr__(self):
+        """
+        Represents the key as its base-10 value
+        :return: The base-10 value
+        """
         return self.base10
+
+    def __str__(self):
+        return str(self.base10)
 
     def generateMapping(self):
         """
@@ -35,8 +51,10 @@ class Key:
         """
         if mode == "encrypt":
             mapping = self.forward_mapping
-        else:
+        elif mode == "decrypt":
             mapping = self.backward_mapping
+        else:
+            raise Exception("Invalid mode: enter either 'encrypt' or 'decrypt'")
         new_text = ""
         for char in text.upper():
             new_text += mapping.get(char, char)
@@ -79,7 +97,7 @@ def base26ToBase10(base26):
 
 def invertDictionary(dictionary):
     """
-    Used to swap the keys and values in a dictionary
+    Swaps the keys and values in a dictionary
     :param dictionary: The initial dictionary
     :type dictionary: dict
     :return: The inverted dictionary
@@ -124,9 +142,17 @@ def generateKnownKey(mapped_letters):
         digit = BASE26_DIGITS[shift]
         base26 += digit
     base10 = base26ToBase10(base26)
+    return Key(base10)
 
 
 def validateMapping(mapped_letters):
+    """
+    Checks if the mapping is valid
+    :param mapped_letters: The letter mapping
+    :type mapped_letters: list[str]
+    :return: Boolean value for if the mapping is valid
+    :rtype: bool
+    """
     letter_set = set(LETTERS)
     mapping_set = set(mapped_letters)
     return letter_set == mapping_set
