@@ -5,7 +5,6 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinterdnd2 import *
-from random import choice
 import pyperclip
 import encryption
 
@@ -75,18 +74,29 @@ def encryptFile():
         return
     else:
         file_name = path.split("/")[-1][:-4]
-        key = encryption.generateRandomKey()
+        key = encrypt_file_key_entry.get()
+        if key == "":
+            messagebox.showerror("Error", "Key field empty")
+            return
+        elif not key.isnumeric():
+            messagebox.showerror("Error", "Invalid input: key must be a number")
+            return
 
-        encoded_file_name = key.mapLetters(file_name.upper(), "encrypt")
+        key = encryption.Key(key)
+        valid_key = encryption.testKey(key)
+        if valid_key:
+            encoded_file_name = key.mapLetters(file_name.upper(), "encrypt")
 
-        with open(path, "r") as file:
-            encrypted_file = open(encoded_file_name + ".txt", "w")
-            encrypted_file.write(str(key))
-            encrypted_file.write("\n")
-            for line in file:
-                encrypted_line = key.mapLetters(line.upper(), "encrypt")
-                encrypted_file.write(encrypted_line)
-            encrypted_file.close()
+            with open(path, "r") as file:
+                encrypted_file = open(encoded_file_name + ".txt", "w")
+                encrypted_file.write(str(key))
+                encrypted_file.write("\n")
+                for line in file:
+                    encrypted_line = key.mapLetters(line.upper(), "encrypt")
+                    encrypted_file.write(encrypted_line)
+                encrypted_file.close()
+        else:
+            messagebox.showerror("Error", "Invalid key")
 
 
 def decryptFile():
@@ -113,41 +123,6 @@ def decryptFile():
                 decrypted_file.write(decrypted_line)
 
 
-# Base conversions
-# def base10ToBase26(base10):
-#     """
-#     Converts a base-10 integer into a base-26 string
-#     :param base10: The base-10 representation of the key
-#     :type base10: int
-#     :return: The base-26 representation of the key
-#     :rtype: str
-#     """
-#     base10 = int(base10)
-#     base26 = ""
-#     for x in range(25, -1, -1):
-#         value = 26 ** x
-#         digit = shifts[base10 // value]
-#         base10 = base10 % 26 ** x
-#         base26 += digit
-#     return base26
-#
-#
-# def base26ToBase10(base26):
-#     """
-#     Converts a base-26 string into a base-10 integer
-#     :param base26: The base-1 representation of the key
-#     :type base26: str
-#     :return: The base-10 representation of the key
-#     :rtype: int
-#     """
-#     base10 = 0
-#     for x in range(26):
-#         digit = shifts.index(base26[-x - 1])
-#         value = 26 ** x
-#         base10 += digit * value
-#     return str(base10)
-
-
 # Copy subroutines
 def copyPlainText():
     """
@@ -163,11 +138,18 @@ def copyCipherText():
     pyperclip.copy(encrypt_output.config("text")[-1])
 
 
-def copyKey():
+def copyRandomKey():
     """
-    Saves the key to the clipboard
+    Saves the random key to the clipboard
     """
-    pyperclip.copy((encrypt_key_output.config("text")[-1])[5:])
+    pyperclip.copy(random_key_label.config("text")[-1])
+
+
+def copyKnownKey():
+    """
+    Saves the known key to the clipboard
+    """
+    pyperclip.copy(key_label.config("text")[-1])
 
 
 def encryptText():
@@ -176,20 +158,15 @@ def encryptText():
     """
     text = (encrypt_text_entry.get()).upper()
     encrypt_output.config(text="")
-    encrypt_key_output.config(text="")
-    if toggle_random_key_button.config("text")[-1] == "Custom Key":
-        key = encryption.generateRandomKey()
-        encrypt_key_output.config(text="Key: " + str(key))
-    else:
-        key = encrypt_key_entry.get()
-        if key == "":
-            messagebox.showerror("Error", "Key field empty")
-            return
-        elif not key.isnumeric():
-            messagebox.showerror("Error", "Invalid input: key must be a number")
-            return
+    key = encrypt_key_entry.get()
+    if key == "":
+        messagebox.showerror("Error", "Key field empty")
+        return
+    elif not key.isnumeric():
+        messagebox.showerror("Error", "Invalid input: key must be a number")
+        return
 
-        key = encryption.Key(key)
+    key = encryption.Key(key)
 
     valid_key = encryption.testKey(key)
     if valid_key:
@@ -198,25 +175,6 @@ def encryptText():
 
     else:
         messagebox.showerror("Error", "Invalid key")
-
-
-# def encrypt(decrypted_text, letter_mapping):
-#     """
-#     Encrypts the text using the letter mapping
-#     :param decrypted_text: The decrypted text
-#     :type decrypted_text: str
-#     :param letter_mapping: The letter mapping
-#     :type letter_mapping: list[str]
-#     :return: The encrypted text
-#     :rtype: str
-#     """
-#     encrypted_text = ""
-#     for char in decrypted_text:
-#         if char in letters:
-#             encrypted_text += letter_mapping[letters.index(char)]
-#         else:
-#             encrypted_text += char
-#     return encrypted_text
 
 
 def decryptText():
@@ -242,61 +200,6 @@ def decryptText():
         messagebox.showerror("Error", "Invalid key")
 
 
-# def decrypt(encrypted_text, letter_mapping):
-#     """
-#     Encrypts the text using the letter mapping
-#     :param encrypted_text: The encrypted text
-#     :type encrypted_text: str
-#     :param letter_mapping: The letter mapping
-#     :type letter_mapping: list[str]
-#     :return: The decrypted text
-#     :rtype: str
-#     """
-#     decrypted_text = ""
-#     for char in encrypted_text:
-#         if char in letter_mapping:
-#             decrypted_text += letters[letter_mapping.index(char)]
-#         else:
-#             decrypted_text += char
-#     return decrypted_text
-
-
-# def generateKey():
-#     """
-#     Generates a random key
-#     :return: The key for the letter mapping
-#     :rtype: int
-#     """
-#     key = ""
-#     total = [27] * 26
-#     x = 0
-#     while len(key) != 26:
-#         char_shift = choice(shifts)
-#         # checks if the shift won't create duplicate letters
-#         if (shifts.index(char_shift) + x) % 26 not in total:
-#             key += char_shift
-#             total[x] = (shifts.index(char_shift) + x) % 26
-#             x += 1
-#     key = base26ToBase10(key)
-#     return key
-
-
-# def generateEncryptedLetters(base26_key):
-#     """
-#     Generates the letter mapping from the key
-#     :param base26_key: The base-26 representation of the key
-#     :type base26_key: str
-#     :return: The letter mapping
-#     :rtype: list[str]
-#     """
-#     letter_mapping = []
-#     for x in range(26):
-#         shift = shifts.index(base26_key[x])
-#         place = (shift + x) % 26
-#         letter_mapping.append(letters[place])
-#     return letter_mapping
-
-
 def checkKey():
     """
     Checks if the key is valid and updates display
@@ -316,39 +219,6 @@ def checkKey():
     else:
         mapped_letters = list(key.forward_mapping.values())
         mapped_letters_label.config(text=mapped_letters)
-
-
-# def testKey(base26_key):
-#     """
-#     Tests if the key is valid
-#     :param base26_key: the base-26 representation of the key
-#     :type base26_key: str
-#     :return: Boolean value for if the key is valid
-#     :rtype: bool
-#     """
-#     shift_check = True
-#     total = [27] * 26
-#
-#     for x in range(26):
-#         shift = (shifts.index(base26_key[x]) + x) % 26
-#         if shift in total:
-#             shift_check = False
-#         else:
-#             total[x] = shift
-#
-#     return shift_check
-
-
-def toggleRandomKey():
-    """
-    Toggles whether a random key is to be generated
-    """
-    if toggle_random_key_button.config("text")[-1] == "Random Key":
-        toggle_random_key_button.config(text="Custom Key")
-        encrypt_key_entry.config(state="disabled")
-    else:
-        toggle_random_key_button.config(text="Random Key")
-        encrypt_key_entry.config(state="normal")
 
 
 def setupFrameDecryptText():
@@ -375,15 +245,12 @@ def setupFrameEncryptText():
     Label(encrypt_text_frame, text="Plain Text:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     encrypt_text_entry.pack(pady=5)
     Label(encrypt_text_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
-    toggle_random_key_button.pack(pady=5)
     encrypt_key_entry.pack(pady=5)
     CustomButton(encrypt_text_frame, **styles["button"], text="Encrypt", command=encryptText, width=18).pack(pady=5)
     Label(encrypt_text_frame, text="Cipher Text:", bg=bg, fg=text_col, font=(font, 12)).pack(pady=5)
     encrypt_output.pack(pady=5)
-    encrypt_key_output.pack(pady=5)
     CustomButton(encrypt_text_frame, **styles["button"], text="Copy Cipher Text", command=copyCipherText,
-                 width=18).pack(padx=35, side=RIGHT)
-    CustomButton(encrypt_text_frame, **styles["button"], text="Copy Key", command=copyKey, width=18).pack(padx=35, side=LEFT)
+                 width=18).pack(padx=35)
 
 
 def setupFrameKeyCheck():
@@ -406,7 +273,9 @@ def setupFrameEncryptFile():
     Label(encrypt_file_frame, text="Drop file:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
     encrypt_file_entry.place(height=250, width=250, x=200, y=115)
     encrypt_file_name_label.place(x=325, y=400, anchor=CENTER)
-    encrypt_file_confirm_button.place(x=325, y=465, anchor=CENTER)
+    Label(encrypt_file_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).place(x=325, y=450, anchor=CENTER)
+    encrypt_file_key_entry.place(x=325, y=500, anchor=CENTER)
+    encrypt_file_confirm_button.place(x=325, y=550, anchor=CENTER)
 
 
 def setupFrameDecryptFile():
@@ -426,9 +295,14 @@ def setupFrameGenerateKey():
     """
     Label(known_key_frame, text="Generate Key", bg="#222222", fg="#AA0000", font=(font, 18, "bold")).pack(pady=15)
     Label(known_key_frame, text="Mapping:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
-    generate_key_entry.place(x=325, y=115, anchor=CENTER)
-    generate_key_button.place(x=325, y=150, anchor=CENTER)
-    key_label.place(x=325, y=200, anchor=CENTER)
+    generate_key_entry.pack(pady=15)
+    generate_known_key_button.pack()
+    key_label.pack(pady=15)
+    CustomButton(known_key_frame, **styles["button"], text="Copy Key", command=copyKnownKey).pack()
+    Label(known_key_frame, text="Random:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack(pady=15)
+    generate_random_key_button.pack()
+    random_key_label.pack(pady=15)
+    CustomButton(known_key_frame, **styles["button"], text="Copy Key", command=copyRandomKey).pack()
 
 
 def loadFrameDecryptText():
@@ -504,32 +378,28 @@ def loadFrameGenerateKey():
 
 
 def generateKnownKey():
+    """
+    Displays the mapped key to the window
+    """
     mapped_letters = generate_key_entry.get().split(",")
     if not encryption.validateMapping(mapped_letters):
         messagebox.showerror("Error", "Invalid mapping")
         return
     else:
         key = encryption.generateKnownKey(mapped_letters)
-    # base26 = ""
-    # for i in range(26):
-    #     shift = (letters.index(mapped_letters[i]) - i + 26) % 26
-    #     digit = shifts[shift]
-    #     base26 += digit
-    # base10 = base26ToBase10(base26)
         key_label.config(text=key)
-#
-#
-# def validateMapping(mapped_letters):
-#     letter_set = set(letters)
-#     mapping_set = set(mapped_letters)
-#     return letter_set == mapping_set
+
+
+def generateRandomKey():
+    """
+    Displays the random key to the window
+    """
+    key = encryption.generateRandomKey()
+    random_key_label.config(text=key)
 
 
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
            'W', 'X', 'Y', 'Z']
-
-shifts = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-          'M', 'N', 'O', 'P']
 
 # Style variables
 styles = {
@@ -613,10 +483,8 @@ decrypt_output = Label(decrypt_text_frame, bg=bg, fg=emphasis, font=(font, 16, "
 
 # Encrypt Widgets
 encrypt_text_entry = Entry(encrypt_text_frame, **styles["entry"])
-toggle_random_key_button = CustomButton(encrypt_text_frame, **styles["button"], text="Random Key", command=toggleRandomKey, width=18)
 encrypt_key_entry = Entry(encrypt_text_frame, **styles["entry"], width=38)
 encrypt_output = Label(encrypt_text_frame, bg=bg, fg=emphasis, font=(font, 16, "bold"))
-encrypt_key_output = Label(encrypt_text_frame, bg=bg, fg=text_col, font=(font, 16))
 
 # Random Key Widgets
 key_check_entry = Entry(random_key_frame, **styles["entry"], width=38)
@@ -626,8 +494,10 @@ mapped_letters_label = Label(random_key_frame, text=letters, bg=bg, fg=text_col,
 
 # Known Key Widgets
 generate_key_entry = Entry(known_key_frame, **styles["entry"], width=45)
-generate_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateKnownKey, width=18)
+generate_known_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateKnownKey, width=18)
 key_label = Label(known_key_frame, bg=bg, fg=text_col, font=(font, 16))
+generate_random_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateRandomKey, width=18)
+random_key_label = Label(known_key_frame, bg=bg, fg=text_col, font=(font, 16))
 
 # Encrypt File Widgets
 en_entry_sv = StringVar()
@@ -641,6 +511,7 @@ encrypt_file_confirm_button = CustomButton(encrypt_file_frame, **styles["button"
 
 encrypt_file_entry.drop_target_register(DND_FILES)
 encrypt_file_entry.dnd_bind('<<Drop>>', drop)
+encrypt_file_key_entry = Entry(encrypt_file_frame, **styles["entry"], width=45)
 
 # Decrypt File Widgets
 de_entry_sv = StringVar()
