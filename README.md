@@ -9,7 +9,7 @@ The program has 6 functions:
 - Encrypting .txt files
 - Decrypting .txt files
 
-The cipher is difficult to crack without knowing how it works, as it has over 403 SEPTILLION possible keys.
+The cipher is difficult to crack without knowing how it works, as it has over **_403 SEPTILLION_** possible keys.
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the required packages.
 ```bash
@@ -17,29 +17,40 @@ pip install -r /path/to/requiremnets.txt
 ```
 
 ## Usage
-
-
 ### Encrypting Text
+![img.png](media/encrypt_text.png)
+- Open the "Encrypt file" tab on the window
 - Enter plain text
-- Enter key, or select random key
+- Enter key
 - Press "Encrypt"
 - Copy cipher text or key to clipboard
 
 ### Decrypting Text
+![img.png](media/decrypt_text.png)
+- Open the "Encrypt file" tab on the window
 - Enter cipher text
 - Enter key
 - Press "Decrypt"
 - Copy plain text to clipboard
 
 ### Validating Keys
+![img.png](media/check_key.png)
+- Open the "Check key" tab on the window
 - Enter key
 - Press "Check Key"
 - If the key is valid, the letter mapping will be shown
 
 ### Generating Keys
+![img.png](media/generate_key.png)
+- Open the "Generate key" tab on the window
+#### Known Mapping
 - Enter the mapping in the format *H,E,M,Q,K,Y,U,J,W,O,V,P,T,X,Z,D,F,C,S,B,N,I,G,R,L,A* where A maps to H, B maps to E, etc.
 - Press "Generate Key"
 - If the mapping is valid, the corresponding key will be generated
+- Copy key to clipboard
+#### Random
+- Press "Generate Key"
+- Copy key to clipboard
 
 ### Encrypting Files
 - Open the "Encrypt file" tab on the window
@@ -57,9 +68,4 @@ pip install -r /path/to/requiremnets.txt
 
 ## Development
 Written in Python 3.10.\
-Python version is fully functional.\
-Future updates will include:
-<ul>
-  <li>Ability to generate key from letter mapping</li>
-  <li>Browser version</li>
-</ul>
+Python version is fully functional.
