@@ -455,7 +455,7 @@ window.resizable(False, False)
 menu_frame = Frame(window, bg=bg2)
 menu_frame.config(width=150, height=600)
 
-img = "lock2.png"
+img = "lock.png"
 image = PhotoImage(file=img)
 Label(menu_frame, image=image, bg=bg2, borderwidth=0).pack(pady=5)
 
