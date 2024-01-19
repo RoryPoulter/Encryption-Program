@@ -1,12 +1,13 @@
 # Encryption Program by Rory Poulter
 # Encrypts and decrypts text and .txt files
-# Last edited: 18/01/24
+# Last edited: 19/01/24
 
 from tkinter import *
 from tkinter import messagebox
 from tkinterdnd2 import *
 from random import choice
 import pyperclip
+import encryption
 
 
 class CustomButton(Button):
@@ -74,17 +75,16 @@ def encryptFile():
         return
     else:
         file_name = path.split("/")[-1][:-4]
-        key = generateKey()
-        encoded_letters = generateEncryptedLetters(base10ToBase26(key))
+        key = encryption.generateRandomKey()
 
-        encoded_file_name = encrypt(file_name.upper(), encoded_letters)
+        encoded_file_name = key.mapLetters(file_name.upper(), "encrypt")
 
         with open(path, "r") as file:
             encrypted_file = open(encoded_file_name + ".txt", "w")
-            encrypted_file.write(key)
+            encrypted_file.write(str(key))
             encrypted_file.write("\n")
             for line in file:
-                encrypted_line = encrypt(line.upper(), encoded_letters)
+                encrypted_line = key.mapLetters(line.upper(), "encrypt")
                 encrypted_file.write(encrypted_line)
             encrypted_file.close()
 
@@ -97,55 +97,55 @@ def decryptFile():
     file_name = path.split("/")[-1][:-4]
     with open(path, "r") as encrypted_file:
         lines = encrypted_file.readlines()
-    key = lines[0]
+    base10 = lines[0]
     lines.pop(0)
 
     try:
-        encoded_letters = generateEncryptedLetters(base10ToBase26(key))
+        key = encryption.Key(base10)
     except ValueError:
         messagebox.showerror("Error", "Invalid key: 1st line must be a valid key ONLY")
     else:
-        decrypted_file_name = decrypt(file_name, encoded_letters)
+        decrypted_file_name = key.mapLetters(file_name, "decrypt")
 
         with open(decrypted_file_name + ".txt", "w") as decrypted_file:
             for line in lines:
-                decrypted_line = decrypt(line, encoded_letters)
+                decrypted_line = key.mapLetters(line, "decrypt")
                 decrypted_file.write(decrypted_line)
 
 
 # Base conversions
-def base10ToBase26(base10):
-    """
-    Converts a base-10 integer into a base-26 string
-    :param base10: The base-10 representation of the key
-    :type base10: int
-    :return: The base-26 representation of the key
-    :rtype: str
-    """
-    base10 = int(base10)
-    base26 = ""
-    for x in range(25, -1, -1):
-        value = 26 ** x
-        digit = shifts[base10 // value]
-        base10 = base10 % 26 ** x
-        base26 += digit
-    return base26
-
-
-def base26ToBase10(base26):
-    """
-    Converts a base-26 string into a base-10 integer
-    :param base26: The base-1 representation of the key
-    :type base26: str
-    :return: The base-10 representation of the key
-    :rtype: int
-    """
-    base10 = 0
-    for x in range(26):
-        digit = shifts.index(base26[-x - 1])
-        value = 26 ** x
-        base10 += digit * value
-    return str(base10)
+# def base10ToBase26(base10):
+#     """
+#     Converts a base-10 integer into a base-26 string
+#     :param base10: The base-10 representation of the key
+#     :type base10: int
+#     :return: The base-26 representation of the key
+#     :rtype: str
+#     """
+#     base10 = int(base10)
+#     base26 = ""
+#     for x in range(25, -1, -1):
+#         value = 26 ** x
+#         digit = shifts[base10 // value]
+#         base10 = base10 % 26 ** x
+#         base26 += digit
+#     return base26
+#
+#
+# def base26ToBase10(base26):
+#     """
+#     Converts a base-26 string into a base-10 integer
+#     :param base26: The base-1 representation of the key
+#     :type base26: str
+#     :return: The base-10 representation of the key
+#     :rtype: int
+#     """
+#     base10 = 0
+#     for x in range(26):
+#         digit = shifts.index(base26[-x - 1])
+#         value = 26 ** x
+#         base10 += digit * value
+#     return str(base10)
 
 
 # Copy subroutines
@@ -178,7 +178,7 @@ def encryptText():
     encrypt_output.config(text="")
     encrypt_key_output.config(text="")
     if toggle_random_key_button.config("text")[-1] == "Custom Key":
-        key = generateKey()
+        key = encryption.generateRandomKey()
         encrypt_key_output.config(text="Key: " + str(key))
     else:
         key = encrypt_key_entry.get()
@@ -189,35 +189,34 @@ def encryptText():
             messagebox.showerror("Error", "Invalid input: key must be a number")
             return
 
-    key = base10ToBase26(key)
+        key = encryption.Key(key)
 
-    valid_key = testKey(key)
+    valid_key = encryption.testKey(key)
     if valid_key:
-        encrypted_letters = generateEncryptedLetters(key)
-        encrypted_text = encrypt(text, encrypted_letters)
+        encrypted_text = key.mapLetters(text, "encrypt")
         encrypt_output.config(text=encrypted_text)
 
     else:
         messagebox.showerror("Error", "Invalid key")
 
 
-def encrypt(decrypted_text, letter_mapping):
-    """
-    Encrypts the text using the letter mapping
-    :param decrypted_text: The decrypted text
-    :type decrypted_text: str
-    :param letter_mapping: The letter mapping
-    :type letter_mapping: list[str]
-    :return: The encrypted text
-    :rtype: str
-    """
-    encrypted_text = ""
-    for char in decrypted_text:
-        if char in letters:
-            encrypted_text += letter_mapping[letters.index(char)]
-        else:
-            encrypted_text += char
-    return encrypted_text
+# def encrypt(decrypted_text, letter_mapping):
+#     """
+#     Encrypts the text using the letter mapping
+#     :param decrypted_text: The decrypted text
+#     :type decrypted_text: str
+#     :param letter_mapping: The letter mapping
+#     :type letter_mapping: list[str]
+#     :return: The encrypted text
+#     :rtype: str
+#     """
+#     encrypted_text = ""
+#     for char in decrypted_text:
+#         if char in letters:
+#             encrypted_text += letter_mapping[letters.index(char)]
+#         else:
+#             encrypted_text += char
+#     return encrypted_text
 
 
 def decryptText():
@@ -233,70 +232,69 @@ def decryptText():
     elif not key.isnumeric():
         messagebox.showerror("Error", "Invalid input: key must be a number")
         return
-    key = base10ToBase26(key)
+    key = encryption.Key(key)
 
-    valid_key = testKey(key)
+    valid_key = encryption.testKey(key)
     if valid_key:
-        encrypted_letters = generateEncryptedLetters(key)
-        decrypted_text = decrypt(text, encrypted_letters)
+        decrypted_text = key.mapLetters(text, "decrypt")
         decrypt_output.config(text=decrypted_text)
     else:
         messagebox.showerror("Error", "Invalid key")
 
 
-def decrypt(encrypted_text, letter_mapping):
-    """
-    Encrypts the text using the letter mapping
-    :param encrypted_text: The encrypted text
-    :type encrypted_text: str
-    :param letter_mapping: The letter mapping
-    :type letter_mapping: list[str]
-    :return: The decrypted text
-    :rtype: str
-    """
-    decrypted_text = ""
-    for char in encrypted_text:
-        if char in letter_mapping:
-            decrypted_text += letters[letter_mapping.index(char)]
-        else:
-            decrypted_text += char
-    return decrypted_text
+# def decrypt(encrypted_text, letter_mapping):
+#     """
+#     Encrypts the text using the letter mapping
+#     :param encrypted_text: The encrypted text
+#     :type encrypted_text: str
+#     :param letter_mapping: The letter mapping
+#     :type letter_mapping: list[str]
+#     :return: The decrypted text
+#     :rtype: str
+#     """
+#     decrypted_text = ""
+#     for char in encrypted_text:
+#         if char in letter_mapping:
+#             decrypted_text += letters[letter_mapping.index(char)]
+#         else:
+#             decrypted_text += char
+#     return decrypted_text
 
 
-def generateKey():
-    """
-    Generates a random key
-    :return: The key for the letter mapping
-    :rtype: int
-    """
-    key = ""
-    total = [27] * 26
-    x = 0
-    while len(key) != 26:
-        char_shift = choice(shifts)
-        # checks if the shift won't create duplicate letters
-        if (shifts.index(char_shift) + x) % 26 not in total:
-            key += char_shift
-            total[x] = (shifts.index(char_shift) + x) % 26
-            x += 1
-    key = base26ToBase10(key)
-    return key
+# def generateKey():
+#     """
+#     Generates a random key
+#     :return: The key for the letter mapping
+#     :rtype: int
+#     """
+#     key = ""
+#     total = [27] * 26
+#     x = 0
+#     while len(key) != 26:
+#         char_shift = choice(shifts)
+#         # checks if the shift won't create duplicate letters
+#         if (shifts.index(char_shift) + x) % 26 not in total:
+#             key += char_shift
+#             total[x] = (shifts.index(char_shift) + x) % 26
+#             x += 1
+#     key = base26ToBase10(key)
+#     return key
 
 
-def generateEncryptedLetters(base26_key):
-    """
-    Generates the letter mapping from the key
-    :param base26_key: The base-26 representation of the key
-    :type base26_key: str
-    :return: The letter mapping
-    :rtype: list[str]
-    """
-    letter_mapping = []
-    for x in range(26):
-        shift = shifts.index(base26_key[x])
-        place = (shift + x) % 26
-        letter_mapping.append(letters[place])
-    return letter_mapping
+# def generateEncryptedLetters(base26_key):
+#     """
+#     Generates the letter mapping from the key
+#     :param base26_key: The base-26 representation of the key
+#     :type base26_key: str
+#     :return: The letter mapping
+#     :rtype: list[str]
+#     """
+#     letter_mapping = []
+#     for x in range(26):
+#         shift = shifts.index(base26_key[x])
+#         place = (shift + x) % 26
+#         letter_mapping.append(letters[place])
+#     return letter_mapping
 
 
 def checkKey():
@@ -311,36 +309,34 @@ def checkKey():
     elif not key.isnumeric():
         messagebox.showerror("Error", "Invalid input: key must be a number")
         return
-    key = base10ToBase26(key)
-
-    shift_check = testKey(key)
-
-    if shift_check:
-        encoded_letters = generateEncryptedLetters(key)
-        mapped_letters_label.config(text=encoded_letters)
-    else:
+    try:
+        key = encryption.Key(key)
+    except ValueError:
         messagebox.showerror("Error", "Invalid key")
+    else:
+        mapped_letters = list(key.forward_mapping.values())
+        mapped_letters_label.config(text=mapped_letters)
 
 
-def testKey(base26_key):
-    """
-    Tests if the key is valid
-    :param base26_key: the base-26 representation of the key
-    :type base26_key: str
-    :return: Boolean value for if the key is valid
-    :rtype: bool
-    """
-    shift_check = True
-    total = [27] * 26
-
-    for x in range(26):
-        shift = (shifts.index(base26_key[x]) + x) % 26
-        if shift in total:
-            shift_check = False
-        else:
-            total[x] = shift
-
-    return shift_check
+# def testKey(base26_key):
+#     """
+#     Tests if the key is valid
+#     :param base26_key: the base-26 representation of the key
+#     :type base26_key: str
+#     :return: Boolean value for if the key is valid
+#     :rtype: bool
+#     """
+#     shift_check = True
+#     total = [27] * 26
+#
+#     for x in range(26):
+#         shift = (shifts.index(base26_key[x]) + x) % 26
+#         if shift in total:
+#             shift_check = False
+#         else:
+#             total[x] = shift
+#
+#     return shift_check
 
 
 def toggleRandomKey():
@@ -509,22 +505,24 @@ def loadFrameGenerateKey():
 
 def generateKnownKey():
     mapped_letters = generate_key_entry.get().split(",")
-    if not validateMapping(mapped_letters):
+    if not encryption.validateMapping(mapped_letters):
         messagebox.showerror("Error", "Invalid mapping")
         return
-    base26 = ""
-    for i in range(26):
-        shift = (letters.index(mapped_letters[i]) - i + 26) % 26
-        digit = shifts[shift]
-        base26 += digit
-    base10 = base26ToBase10(base26)
-    key_label.config(text=base10)
-
-
-def validateMapping(mapped_letters):
-    letter_set = set(letters)
-    mapping_set = set(mapped_letters)
-    return letter_set == mapping_set
+    else:
+        key = encryption.generateKnownKey(mapped_letters)
+    # base26 = ""
+    # for i in range(26):
+    #     shift = (letters.index(mapped_letters[i]) - i + 26) % 26
+    #     digit = shifts[shift]
+    #     base26 += digit
+    # base10 = base26ToBase10(base26)
+        key_label.config(text=key)
+#
+#
+# def validateMapping(mapped_letters):
+#     letter_set = set(letters)
+#     mapping_set = set(mapped_letters)
+#     return letter_set == mapping_set
 
 
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
