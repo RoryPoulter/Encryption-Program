@@ -444,7 +444,7 @@ font = "verdana"
 
 window = TkinterDnD.Tk()
 window.title("Encryption Program")
-window.geometry("1200x700")
+window.geometry("1200x675")
 window.config(bg=bg)
 window.resizable(False, False)
 
