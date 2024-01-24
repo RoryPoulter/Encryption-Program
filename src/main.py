@@ -538,6 +538,6 @@ menu_frame.place(x=0, y=0, width=150, height=700)
 for wid in menu_widgets:
     wid.pack(anchor="e", padx=5, pady=20)
 
-Label(text="R. Poulter v1.2.0", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=677)
+Label(text="R. Poulter v1.2.0", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=652)
 
 window.mainloop()
