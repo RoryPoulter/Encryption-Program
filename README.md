@@ -13,7 +13,7 @@ The cipher is difficult to crack without knowing how it works, as it has over **
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the required packages.
 ```bash
-pip install -r /path/to/requiremnets.txt
+pip install -r /path/to/requirements.txt
 ```
 
 ## Usage
