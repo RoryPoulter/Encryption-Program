@@ -7,6 +7,7 @@ from tkinter import messagebox
 from tkinterdnd2 import *
 import pyperclip
 import encryption
+import os.path
 
 
 class CustomButton(Button):
@@ -455,8 +456,8 @@ window.resizable(False, False)
 menu_frame = Frame(window, bg=bg2)
 menu_frame.config(width=150, height=600)
 
-img = "lock.png"
-image = PhotoImage(file=img)
+filepath = os.path.dirname(__file__)
+image = PhotoImage(file=os.path.join(filepath, "lock.png"))
 Label(menu_frame, image=image, bg=bg2, borderwidth=0).pack(pady=5)
 
 menu_decrypt_text_button = CustomButton(menu_frame, **styles["side button"], text="Decrypt text", command=loadFrameDecryptText)
