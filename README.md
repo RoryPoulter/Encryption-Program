@@ -15,7 +15,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 ```bash
 pip install -r /path/to/requirements.txt
 ```
-
+Or run the file 'setup.cmd'
 ## Usage
 ### Encrypting Text
 ![img.png](media/encrypt_text.png)
