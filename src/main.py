@@ -1,6 +1,6 @@
 # Encryption Program by Rory Poulter
 # Encrypts and decrypts text and .txt files
-# Last edited: 19/01/24
+# Last edited: 29/01/24
 
 from tkinter import *
 from tkinter import messagebox
@@ -544,6 +544,6 @@ menu_frame.place(x=0, y=0, width=150, height=700)
 for wid in menu_widgets:
     wid.pack(anchor="e", padx=5, pady=20)
 
-Label(text="R. Poulter v1.2.0", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=652)
+Label(text="R. Poulter v1.2.1", bg=bg2, fg=bg, font=(font, 10)).place(x=0, y=652)
 
 window.mainloop()
