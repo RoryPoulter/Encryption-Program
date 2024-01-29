@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v1.2.1 [2024-01-29]
+### Improvements
+- Created setup.cmd for installing modules before running program for the first time
+
 ## v1.2.0 [2024-01-19]
 ### New Features
 - Generate keys from known mapping
