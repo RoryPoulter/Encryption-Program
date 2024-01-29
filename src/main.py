@@ -7,7 +7,7 @@ from tkinter import messagebox
 from tkinterdnd2 import *
 import pyperclip
 import encryption
-import os.path
+import os
 
 
 class CustomButton(Button):
@@ -89,7 +89,8 @@ def encryptFile():
             encoded_file_name = key.mapLetters(file_name.upper(), "encrypt")
 
             with open(path, "r") as file:
-                encrypted_file = open(encoded_file_name + ".txt", "w")
+                encrypted_file_path = os.path.dirname(__file__)
+                encrypted_file = open(os.path.join(encrypted_file_path, "Encrypted and decrypted files/" + encoded_file_name + ".txt"), "w")
                 encrypted_file.write(str(key))
                 encrypted_file.write("\n")
                 for line in file:
@@ -118,7 +119,8 @@ def decryptFile():
     else:
         decrypted_file_name = key.mapLetters(file_name, "decrypt")
 
-        with open(decrypted_file_name + ".txt", "w") as decrypted_file:
+        decrypted_file_path = os.path.dirname(__file__)
+        with open(os.path.join(decrypted_file_path, "Encrypted and decrypted files/" + decrypted_file_name + ".txt"), "w") as decrypted_file:
             for line in lines:
                 decrypted_line = key.mapLetters(line, "decrypt")
                 decrypted_file.write(decrypted_line)
@@ -434,6 +436,9 @@ styles = {
         "disabledforeground": "#161616"
     }
 }
+
+if not os.path.exists("./Encrypted and decrypted files"):
+    os.mkdir("./Encrypted and decrypted files")
 
 bg = "#222222"
 bg2 = "#161616"
