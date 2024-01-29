@@ -15,7 +15,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 ```bash
 pip install -r /path/to/requirements.txt
 ```
-Or run the file 'setup.cmd'
+Or run the file `setup.cmd`
 ## Usage
 ### Encrypting Text
 ![img.png](media/encrypt_text.png)
@@ -54,17 +54,20 @@ Or run the file 'setup.cmd'
 
 ### Encrypting Files
 - Open the "Encrypt file" tab on the window
-- Open File Explorer and locate chosen .txt file to encrypt
-- Drag and drop the file into the box on the window
+- Select the file to be encrypted
+  - Drag and drop the file into the box on the window from File Explorer
+  - Press "Select File" and select the file from the file explorer
+- Enter the key
 - Press "Encrypt File" below the file name
-- The encrypted file will contain the key used to encrypt/decrypt the text, followed by the encrypted text and will be stored in the directory ```src/Encrypted and decrypted files```
+- The encrypted file will contain the key used to encrypt/decrypt the text, followed by the encrypted text and will be stored in the directory `src/Encrypted and decrypted files`
 
 ### Decrypting Files
 - Open the "Decrypt file" tab on the window
-- Open File Explorer and locate chosen .txt file to encrypt
-- Drag and drop the file into the box on the window
+- Select the file to be decrypted
+  - Drag and drop the file into the box on the window from File Explorer
+  - Press "Select File" and select the file from the file explorer
 - Press "Decrypt File" below the file name
-- The decrypted file will contain decrypted text and will be stored in the directory ```src/Encrypted and decrypted files```
+- The decrypted file will contain decrypted text and will be stored in the directory `src/Encrypted and decrypted files`
 
 ## Development
 Written in Python 3.10.\
