@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v1.2.2 [2024-01-29]
+### Bug Fixes
+- Fixed issue in ```setup.cmd``` when creating directory to store files
+
 ## v1.2.1 [2024-01-29]
 ### Improvements
 - Created setup.cmd for installing modules before running program for the first time
