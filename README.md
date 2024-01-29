@@ -57,14 +57,14 @@ Or run the file 'setup.cmd'
 - Open File Explorer and locate chosen .txt file to encrypt
 - Drag and drop the file into the box on the window
 - Press "Encrypt File" below the file name
-- The encrypted file will contain the key used to encrypt/decrypt the text, followed by the encrypted text
+- The encrypted file will contain the key used to encrypt/decrypt the text, followed by the encrypted text and will be stored in the directory ```src/Encrypted and decrypted files```
 
 ### Decrypting Files
 - Open the "Decrypt file" tab on the window
 - Open File Explorer and locate chosen .txt file to encrypt
 - Drag and drop the file into the box on the window
 - Press "Decrypt File" below the file name
-- The decrypted file will contain decrypted text
+- The decrypted file will contain decrypted text and will be stored in the directory ```src/Encrypted and decrypted files```
 
 ## Development
 Written in Python 3.10.\
