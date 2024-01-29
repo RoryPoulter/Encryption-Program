@@ -4,6 +4,7 @@
 
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog
 from tkinterdnd2 import *
 import pyperclip
 import encryption
@@ -42,6 +43,23 @@ class CustomButton(Button):
 
 
 # File subroutines
+def browseFiles():
+    file_path = filedialog.askopenfilename(initialdir="/", title="Select a File", filetypes=(("Text files", "*.txt*"),
+                                                                                             ("all files",  "*.*")))
+    file_name = file_path.split("/")[-1]
+    print(file_name)
+    if ".txt" not in file_name and file_name:
+        messagebox.showerror("Error", "Unsupported file type: make sure file is a .txt file")
+        return
+
+    if encrypt_file_frame.winfo_ismapped():
+        en_entry_sv.set(file_path)
+        encrypt_file_name_label.config(text=file_name)
+    else:
+        de_entry_sv.set(file_path)
+        decrypt_file_name_label.config(text=file_name)
+
+
 def drop(event):
     """
     Finds the file name
@@ -49,16 +67,13 @@ def drop(event):
     if encrypt_file_frame.winfo_ismapped():
         file_name_label = encrypt_file_name_label
         entry_sv = en_entry_sv
-        confirm_button = encrypt_file_confirm_button
     else:
         file_name_label = decrypt_file_name_label
         entry_sv = de_entry_sv
-        confirm_button = decrypt_file_confirm_button
 
     if ".txt" not in event.data:
         messagebox.showerror("Error", "Invalid file type: enter .txt file")
     else:
-        confirm_button.config(state="normal")
         path = event.data.strip("{").strip("}")
         fileName = path.split("/")[-1]
         file_name_label.config(text=fileName)
@@ -70,8 +85,9 @@ def encryptFile():
     """
     Encrypts the text and name of the .txt file as a separate file
     """
-    path = encrypt_file_entry.get()
+    path = en_entry_sv.get()
     if path == "":
+        messagebox.showerror("Error", "No file selected")
         return
     else:
         file_name = path.split("/")[-1][:-4]
@@ -97,6 +113,7 @@ def encryptFile():
                     encrypted_line = key.mapLetters(line.upper(), "encrypt")
                     encrypted_file.write(encrypted_line)
                 encrypted_file.close()
+            messagebox.showinfo("Success!", "File successfully encrypted")
         else:
             messagebox.showerror("Error", "Invalid key")
 
@@ -105,7 +122,10 @@ def decryptFile():
     """
     Decrypts the text and name of the .txt file as a separate file
     """
-    path = decrypt_file_entry.get()
+    path = de_entry_sv.get()
+    if path == "":
+        messagebox.showerror("Error", "No file selected")
+        return
     file_name = path.split("/")[-1][:-4]
     with open(path, "r") as encrypted_file:
         lines = encrypted_file.readlines()
@@ -124,6 +144,7 @@ def decryptFile():
             for line in lines:
                 decrypted_line = key.mapLetters(line, "decrypt")
                 decrypted_file.write(decrypted_line)
+        messagebox.showinfo("Success!", "File successfully decrypted")
 
 
 # Copy subroutines
@@ -275,10 +296,12 @@ def setupFrameEncryptFile():
     Label(encrypt_file_frame, text="Encrypt File", bg="#222222", fg="#AA0000", font=(font, 18, "bold")).pack(pady=15)
     Label(encrypt_file_frame, text="Drop file:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
     encrypt_file_entry.place(height=250, width=250, x=200, y=115)
-    encrypt_file_name_label.place(x=325, y=400, anchor=CENTER)
-    Label(encrypt_file_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).place(x=325, y=450, anchor=CENTER)
-    encrypt_file_key_entry.place(x=325, y=500, anchor=CENTER)
-    encrypt_file_confirm_button.place(x=325, y=550, anchor=CENTER)
+    CustomButton(encrypt_file_frame, **styles["button"], text="Select File", command=browseFiles).place(x=325, y=400,
+                                                                                                        anchor=CENTER)
+    encrypt_file_name_label.place(x=325, y=450, anchor=CENTER)
+    Label(encrypt_file_frame, text="Key:", bg=bg, fg=text_col, font=(font, 12)).place(x=325, y=500, anchor=CENTER)
+    encrypt_file_key_entry.place(x=325, y=530, anchor=CENTER)
+    encrypt_file_confirm_button.place(x=325, y=570, anchor=CENTER)
 
 
 def setupFrameDecryptFile():
@@ -288,8 +311,10 @@ def setupFrameDecryptFile():
     Label(decrypt_file_frame, text="Decrypt File", bg="#222222", fg="#AA0000", font=(font, 18, "bold")).pack(pady=15)
     Label(decrypt_file_frame, text="Drop file:", bg="#222222", fg="#FFFFFF", font=(font, 14)).pack()
     decrypt_file_entry.place(height=250, width=250, x=200, y=115)
-    decrypt_file_name_label.place(x=325, y=400, anchor=CENTER)
-    decrypt_file_confirm_button.place(x=325, y=465, anchor=CENTER)
+    CustomButton(decrypt_file_frame, **styles["button"], text="Select File", command=browseFiles).place(x=325, y=400,
+                                                                                                        anchor=CENTER)
+    decrypt_file_name_label.place(x=325, y=450, anchor=CENTER)
+    decrypt_file_confirm_button.place(x=325, y=515, anchor=CENTER)
 
 
 def setupFrameGenerateKey():
@@ -500,20 +525,22 @@ mapped_letters_label = Label(random_key_frame, text=letters, bg=bg, fg=text_col,
 
 # Known Key Widgets
 generate_key_entry = Entry(known_key_frame, **styles["entry"], width=45)
-generate_known_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateKnownKey, width=18)
+generate_known_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key",
+                                         command=generateKnownKey, width=18)
 key_label = Label(known_key_frame, bg=bg, fg=text_col, font=(font, 16))
-generate_random_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key", command=generateRandomKey, width=18)
+generate_random_key_button = CustomButton(known_key_frame, **styles["button"], text="Generate Key",
+                                          command=generateRandomKey, width=18)
 random_key_label = Label(known_key_frame, bg=bg, fg=text_col, font=(font, 16))
 
 # Encrypt File Widgets
 en_entry_sv = StringVar()
-encrypt_file_entry = Entry(encrypt_file_frame, text=en_entry_sv, width=25, font=(font, 14), disabledbackground="#161616",
-                           disabledforeground="#161616", state="disabled")
+encrypt_file_entry = Entry(encrypt_file_frame, textvariable=en_entry_sv, width=25, font=(font, 14),
+                           disabledbackground="#161616", disabledforeground="#161616", state="disabled")
 
 encrypt_file_name_label = Label(encrypt_file_frame, bg="#222222", fg="#FFFFFF", font=(font, 14))
 
-encrypt_file_confirm_button = CustomButton(encrypt_file_frame, **styles["button"], text="Encrypt File", width=15, command=encryptFile,
-                                           state="disabled", disabledforeground=text_col)
+encrypt_file_confirm_button = CustomButton(encrypt_file_frame, **styles["button"], text="Encrypt File", width=15,
+                                           command=encryptFile, disabledforeground=text_col)
 
 encrypt_file_entry.drop_target_register(DND_FILES)
 encrypt_file_entry.dnd_bind('<<Drop>>', drop)
@@ -521,13 +548,13 @@ encrypt_file_key_entry = Entry(encrypt_file_frame, **styles["entry"], width=45)
 
 # Decrypt File Widgets
 de_entry_sv = StringVar()
-decrypt_file_entry = Entry(decrypt_file_frame, text=de_entry_sv, width=25, font=(font, 14), disabledbackground="#161616",
-                           disabledforeground="#161616", state="disabled")
+decrypt_file_entry = Entry(decrypt_file_frame, textvariable=de_entry_sv, width=25, font=(font, 14),
+                           disabledbackground="#161616", disabledforeground="#161616", state="disabled")
 
 decrypt_file_name_label = Label(decrypt_file_frame, bg="#222222", fg="#FFFFFF", font=(font, 14))
 
-decrypt_file_confirm_button = CustomButton(decrypt_file_frame, **styles["button"], text="Decrypt File", width=15, command=decryptFile,
-                                           disabledforeground=text_col, state="disabled")
+decrypt_file_confirm_button = CustomButton(decrypt_file_frame, **styles["button"], text="Decrypt File", width=15,
+                                           command=decryptFile, disabledforeground=text_col)
 
 decrypt_file_entry.drop_target_register(DND_FILES)
 decrypt_file_entry.dnd_bind('<<Drop>>', drop)
