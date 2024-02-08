@@ -18,7 +18,7 @@ pip install -r /path/to/requirements.txt
 Or run the file `setup.cmd`
 ## Usage
 ### Encrypting Text
-![img.png](media/encrypt_text.png)
+![encrypt_text](https://github.com/RoryPoulter/Encryption-Program/assets/118304377/681410ad-35bc-4314-9b3c-b996964fb9bc)
 - Open the "Encrypt file" tab on the window
 - Enter plain text
 - Enter key
@@ -26,7 +26,7 @@ Or run the file `setup.cmd`
 - Copy cipher text or key to clipboard
 
 ### Decrypting Text
-![img.png](media/decrypt_text.png)
+![decrypt_text](https://github.com/RoryPoulter/Encryption-Program/assets/118304377/49da37ea-0bf3-49ec-b0b2-a92ce5da629f)
 - Open the "Encrypt file" tab on the window
 - Enter cipher text
 - Enter key
@@ -34,14 +34,14 @@ Or run the file `setup.cmd`
 - Copy plain text to clipboard
 
 ### Validating Keys
-![img.png](media/check_key.png)
+![check_key](https://github.com/RoryPoulter/Encryption-Program/assets/118304377/ed1a2d92-16ee-4f49-80db-0cf48e34a286)
 - Open the "Check key" tab on the window
 - Enter key
 - Press "Check Key"
 - If the key is valid, the letter mapping will be shown
 
 ### Generating Keys
-![img.png](media/generate_key.png)
+![generate_key](https://github.com/RoryPoulter/Encryption-Program/assets/118304377/3e9fbf27-a1ca-4ab2-b87f-e4100807f91d)
 - Open the "Generate key" tab on the window
 #### Known Mapping
 - Enter the mapping in the format *H,E,M,Q,K,Y,U,J,W,O,V,P,T,X,Z,D,F,C,S,B,N,I,G,R,L,A* where A maps to H, B maps to E, etc.
